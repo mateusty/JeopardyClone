@@ -5,15 +5,26 @@ import { makeRoomCode } from './Services/roomService.js';
 
 const PORT = 3000;
 
-const roomIds = <string[]>[];
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: { origin: 'http://localhost:5173'}
 });
 
+const roomIds = <string[]>[];
+
 io.on("connection", (socket: Socket) => {
     console.log(`Ocorreu algo!`)
+
+    socket.on("join-room", (roomId: string) => {
+        console.log(roomIds);
+        console.log(roomId);
+        console.log(roomIds.includes(roomId));
+        if(roomIds.includes(roomId)) {
+            socket.join(roomId);
+            socket.emit('room-id', roomId);
+        }
+    })
 
     socket.on("create-room", () => {
         const roomId = makeRoomCode();
@@ -23,9 +34,9 @@ io.on("connection", (socket: Socket) => {
         roomIds.push(roomId);
     })
 
-    socket.on("request-rooms", () => {
-        console.log(roomIds)
-        socket.emit('room-ids', roomIds);
+
+    socket.on("message", ({message, roomId}: {message: string, roomId: string}) => {
+        io.to(roomId).emit('message-response', message);
     })
 });
 
