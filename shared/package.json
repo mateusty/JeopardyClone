@@ -1,0 +1,6 @@
+{
+  "name": "@projeto/shared",
+  "version": "1.0.0",
+  "main": "socketPayload.ts",
+  "types": "socketPayload.ts"
+}

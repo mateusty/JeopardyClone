@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
+import type { ServerToClientEvents, ClientToServerEvents } from '@projeto/shared';
 
-const socket = io('http://localhost:3000', {
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io('http://localhost:3000', {
   autoConnect: false
 });
 
@@ -17,7 +18,7 @@ function App() {
     socket.on('room-id', (roomId: string) => {
       setRoomId(roomId);
     })
-    socket.on('message-response', (message: string) => {
+    socket.on('message-response', ({message}: {message: string}) => {
       setMessageResponse(message);
     })
     
