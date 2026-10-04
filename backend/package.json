@@ -23,7 +23,8 @@
   "homepage": "https://github.com/mateusty/JeopardyClone#readme",
   "dependencies": {
     "dotenv": "^18.0.5",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "socket.io": "^4.8.4"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
