@@ -1,9 +1,11 @@
 import express from 'express';
 import { createServer } from 'http';
 import { Server, Socket } from 'socket.io';
+import { makeRoomCode } from './Services/roomService.js';
 
 const PORT = 3000;
 
+const roomIds = <string[]>[];
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
@@ -13,12 +15,17 @@ const io = new Server(httpServer, {
 io.on("connection", (socket: Socket) => {
     console.log(`Ocorreu algo!`)
 
-    socket.join('room1')
+    socket.on("create-room", () => {
+        const roomId = makeRoomCode();
+        console.log(`Criando sala com id: ${roomId}`);
+        socket.join(roomId);
+        socket.emit('room-id', roomId);
+        roomIds.push(roomId);
+    })
 
-    socket.on("message", (text: string) => {
-        console.log('Mensagem recebida')
-        io.to('room1').emit('response', text.toUpperCase());
-
+    socket.on("request-rooms", () => {
+        console.log(roomIds)
+        socket.emit('room-ids', roomIds);
     })
 });
 
