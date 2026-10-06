@@ -1,65 +1,15 @@
-import { useEffect, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
-import type { ServerToClientEvents, ClientToServerEvents } from '@projeto/shared';
-
-const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io('http://localhost:3000', {
-  autoConnect: false
-});
-
+import { BrowserRouter } from 'react-router-dom';
+import { Router } from './routes/Router';
+import { SocketProvider } from './services/socket';
 
 function App() {
-  const [roomId, setRoomId] = useState<string>('');
-  const [message, setMessage] = useState<string>('');
-  const [messageResponse, setMessageResponse] = useState<string>('');
-  const [roomIdRequest, setRoomIdRequest] = useState<string>('');
-  
-  useEffect(() => {
-    socket.connect()
-    socket.on('room-id', (roomId: string) => {
-      setRoomId(roomId);
-    })
-    socket.on('message-response', ({message}: {message: string}) => {
-      setMessageResponse(message);
-    })
-    
-    return () => {
-      socket.disconnect();
-      socket.off('room-id')
-    }
-  }, [])
-  
-  const createRoom = () => {
-    if(roomId.length === 0) {
-      socket.emit('create-room')
-    }
-  }
-
-  const joinRoom = () => {
-    console.log(`Joining room with Id: ${roomIdRequest}`); 
-    socket.emit('join-room', roomIdRequest);
-  }
-
-  const sendMessage = () => {
-    socket.emit('message', {message: message, roomId: roomId})
-  }
-
   return (
-    <>
-      <button onClick={createRoom}>Create Room</button>
-      <p>{roomId}</p>
-
-      <div>
-        <input type="text" value={roomIdRequest} onChange={(e) => setRoomIdRequest(e.target.value)}/>
-        <button onClick={joinRoom}>Join Room</button>
-      </div>
-
-      <div>
-        <input type="text" value={message} onChange={(e) => setMessage(e.target.value)}/>
-        <button onClick={sendMessage}>Send Message</button>
-        <p>{messageResponse}</p>
-      </div>
-    </>
-  )
+    <BrowserRouter>
+      <SocketProvider>
+        <Router />
+      </SocketProvider>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

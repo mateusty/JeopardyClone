@@ -1,0 +1,57 @@
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  color: #e8efeb;
+  background: #111715;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --background: #111715;
+  --background-raised: #151c19;
+  --surface-deep: #151d19;
+  --surface: #19221e;
+  --surface-raised: #202b26;
+  --border: #2b3932;
+  --border-strong: #40564b;
+  --text: #e8efeb;
+  --text-soft: #c4d0c9;
+  --muted: #8d9b92;
+  --accent: #8fc5aa;
+  --accent-bright: #a7d8be;
+  --accent-soft: rgb(143 197 170 / 12%);
+  --accent-border: rgb(143 197 170 / 35%);
+  --success: #85c7a1;
+  --warning: #e9bd80;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 50% -20%, rgb(74 112 91 / 18%), transparent 52%),
+    var(--background);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: rgb(143 197 170 / 30%);
+  color: var(--text);
+}

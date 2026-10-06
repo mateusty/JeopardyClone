@@ -1,8 +1,12 @@
-import type roomService = require("../backend/src/services/roomService");
-
 export interface Message {
     "message": string;
     "roomId": string;
+}
+
+export interface Player {
+    id: string;
+    name: string;
+    points: number;
 }
 
 export interface ClientToServerEvents {
@@ -18,5 +22,5 @@ export interface ServerToClientEvents {
     "show-question": ({column, row}: {column: number, row: number}) => void;
     "block-buzzer": () => void;
     "expecting-answer": () => void;
-    "update-scores": (players: roomService.Player[]) => void;
+    "update-scores": (players: Player[]) => void;
 }
