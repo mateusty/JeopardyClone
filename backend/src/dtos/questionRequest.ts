@@ -1,4 +1,4 @@
-import type { MediaType } from "express";
+import type { MediaType } from "../generated/prisma/enums.js";
 
 export class QuestionRequest {
     constructor(
