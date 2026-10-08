@@ -26,6 +26,7 @@
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "@projeto/shared": "*",
+    "cors": "^2.8.6",
     "express": "^5.2.1",
     "pg": "^8.23.1",
     "socket.io": "^4.8.4"

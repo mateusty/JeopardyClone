@@ -19,7 +19,18 @@ export const createQuestion = async (question: QuestionRequest) : Promise<Questi
 export const update = async (question: QuestionRequest, id: string) : Promise<Question> => {
     return await prisma.question.update({
         where: { id: id },
-        data: {question}
+        data: {
+                        theme: question.theme,
+            points: question.points,
+            body: question.body,
+            answer: question.answer,
+            ...(question.mediaType !== undefined && {
+                mediaType: question.mediaType
+            }),
+            ...(question.mediaUrl !== undefined && {
+                mediaUrl: question.mediaUrl
+            })
+        }
     })
 }
 

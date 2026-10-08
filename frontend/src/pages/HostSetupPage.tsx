@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useQuestionCatalog } from '../hooks/useQuestionCatalog';
+import { useGameSocket } from '../hooks/useGameSocket';
 import type { GameColumn, GameSetup } from '../types/game';
 import styles from './HostSetupPage.module.css';
 
@@ -10,12 +11,15 @@ interface HostRouteState {
 }
 
 export function HostSetupPage() {
+  const themesPerPhase = 5;
+  const totalThemes = themesPerPhase * 2;
   const location = useLocation();
   const navigate = useNavigate();
   const routeState = location.state as HostRouteState | null;
   const roomId = routeState?.roomId;
   const hostName = routeState?.playerName?.trim();
   const { questions, isLoading, error } = useQuestionCatalog();
+  const { sendQuestions } = useGameSocket();
   const [selectedThemes, setSelectedThemes] = useState<string[]>([]);
 
   const themes = useMemo(() => {
@@ -33,7 +37,7 @@ export function HostSetupPage() {
   const toggleTheme = (theme: string) => {
     setSelectedThemes((current) => {
       if (current.includes(theme)) return current.filter((selected) => selected !== theme);
-      if (current.length >= 12) return current;
+      if (current.length >= totalThemes) return current;
       return [...current, theme];
     });
   };
@@ -47,8 +51,9 @@ export function HostSetupPage() {
         .slice(0, 5),
     }));
 
-    if (columns.length !== 12 || columns.some((column) => column.questions.length !== 5)) return;
+    if (columns.length !== totalThemes || columns.some((column) => column.questions.length !== 5)) return;
 
+    sendQuestions(columns.flatMap((column) => column.questions), roomId);
     const setup: GameSetup = { roomId, hostName, columns };
     navigate(`/game/${roomId}`, {
       state: { roomId, playerName: hostName, role: 'host', setup },
@@ -65,24 +70,22 @@ export function HostSetupPage() {
       </header>
 
       <section className={styles.intro}>
-        <span className={styles.kicker}>CONFIGURAÇÃO DA PARTIDA</span>
         <h1>Monte seu tabuleiro</h1>
-        <p>Escolha 12 temas. Cada tema precisa ter cinco perguntas para preencher as duas fases.</p>
+        <p>Selecione 10 temas, com 5 perguntas em cada tema.</p>
       </section>
 
       <section className={styles.rules} aria-label="Regras do tabuleiro">
-        <div><span>01</span><strong>12 temas</strong><small>6 em cada fase</small></div>
-        <div><span>02</span><strong>5 perguntas</strong><small>por tema</small></div>
-        <div><span>03</span><strong>Pontos em dobro</strong><small>na segunda fase</small></div>
+        <div><strong>Fase 1</strong><small>5 temas · pontos normais</small></div>
+        <div><strong>Fase 2</strong><small>5 temas · pontos dobrados</small></div>
       </section>
 
       <div className={styles.sectionHeading}>
         <div>
           <h2>Temas disponíveis</h2>
-          <p>Os temas sem cinco perguntas completas não podem ser selecionados.</p>
+          <p>Temas com menos de 5 perguntas não podem ser selecionados.</p>
         </div>
-        <span className={selectedThemes.length === 12 ? styles.complete : styles.counter}>
-          {selectedThemes.length}<span>/12</span>
+        <span className={selectedThemes.length === totalThemes ? styles.complete : styles.counter}>
+          {selectedThemes.length}<span>/{totalThemes}</span>
         </span>
       </div>
 
@@ -97,7 +100,7 @@ export function HostSetupPage() {
           {themes.map(({ name, count }) => {
             const selected = selectedThemes.includes(name);
             const unavailable = count < 5;
-            const atLimit = selectedThemes.length === 12 && !selected;
+            const atLimit = selectedThemes.length === totalThemes && !selected;
             return (
               <button
                 aria-pressed={selected}
@@ -116,10 +119,10 @@ export function HostSetupPage() {
         </div>
       )}
 
-      {selectedThemes.length === 12 && (
+      {selectedThemes.length === totalThemes && (
         <div className={styles.phasePreview}>
-          <div><span>FASE 1</span><strong>6 temas · pontos normais</strong></div>
-          <div><span>FASE 2</span><strong>6 temas · pontos dobrados</strong></div>
+          <div><span>FASE 1</span><strong>{themesPerPhase} temas · pontos normais</strong></div>
+          <div><span>FASE 2</span><strong>{themesPerPhase} temas · pontos dobrados</strong></div>
         </div>
       )}
 
@@ -127,17 +130,13 @@ export function HostSetupPage() {
         <button className={styles.backButton} onClick={() => navigate('/')} type="button">Voltar</button>
         <button
           className={styles.startButton}
-          disabled={selectedThemes.length !== 12}
+          disabled={selectedThemes.length !== totalThemes}
           onClick={startGame}
           type="button"
         >
           Ir para o tabuleiro <span aria-hidden="true">↗</span>
         </button>
       </footer>
-      <p className={styles.notice}>
-        A configuração é aplicada neste navegador. Para compartilhá-la com os demais jogadores, o servidor precisa
-        receber e transmitir o tabuleiro.
-      </p>
     </main>
   );
 }

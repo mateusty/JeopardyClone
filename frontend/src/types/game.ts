@@ -1,12 +1,6 @@
-export interface Question {
-  id: string;
-  theme: string;
-  points: number;
-  body: string;
-  answer: string;
-  mediaType: string | null;
-  mediaUrl: string | null;
-}
+import type { Question } from '@projeto/shared';
+
+export type { Question } from '@projeto/shared';
 
 export interface GameColumn {
   theme: string;

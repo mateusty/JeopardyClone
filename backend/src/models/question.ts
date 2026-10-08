@@ -8,6 +8,7 @@ export class Question {
         public body: string,
         public answer: string,
         public mediaType: MediaType | null,
-        public mediaUrl: string | null
+        public mediaUrl: string | null,
+        public alreadyShown?: boolean
     ) {}
 }
